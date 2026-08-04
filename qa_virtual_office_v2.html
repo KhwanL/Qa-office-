@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QA Virtual Office 2.0</title>
+<style>
+:root{
+  --bg:#0f1420;--panel:#182036;--panel2:#202a44;--line:#2c3858;
+  --text:#edf2ff;--muted:#98a3bd;--blue:#4c8dff;--green:#37c978;
+  --yellow:#ffd166;--red:#ff6b6b;--purple:#a777e3;--cyan:#56ccf2;
+}
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Tahoma,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{background:#0b101a;border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column}
+.brand{font-size:18px;font-weight:800;padding:4px 8px 18px}.brand span{color:var(--blue)}
+.nav{display:grid;gap:7px}.nav button{border:0;background:transparent;color:var(--muted);padding:11px 12px;border-radius:10px;text-align:left;cursor:pointer}
+.nav button:hover,.nav button.active{background:var(--blue);color:#fff}.mini{margin-top:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px;color:var(--muted)}
+.main{min-width:0}.topbar{height:62px;background:#0b101a;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.online{font-size:12px;color:var(--muted)}.online i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px}
+.content{padding:18px}.page{display:none}.page.active{display:block}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px}
+.office{position:relative;min-height:680px;overflow:hidden;background:
+linear-gradient(180deg,#26334f 0 28%,#3b4c6a 28% 30%,#b99066 30% 100%)}
+.window{position:absolute;top:45px;width:170px;height:100px;border:9px solid #dfe7f5;background:linear-gradient(#83cfff,#dff7ff);box-shadow:0 0 0 3px #7f8cab}
+.w1{left:60px}.w2{right:60px}.plant{position:absolute;font-size:54px}.p1{left:20px;bottom:25px}.p2{right:20px;bottom:25px}
+.desk{position:absolute;width:220px;height:72px;background:#8b5e3c;border-radius:8px;box-shadow:0 16px 0 #65442d}
+.desk::after{content:"";position:absolute;left:30px;right:30px;top:-10px;height:12px;background:#b77a4f;border-radius:8px}
+.d1{left:45px;top:285px}.d2{right:45px;top:285px}.d3{left:50%;transform:translateX(-50%);top:505px}
+.monitor{position:absolute;width:54px;height:35px;background:#1d263b;border:4px solid #495a7a;border-radius:5px;top:-42px;left:82px}.monitor::after{content:"";position:absolute;width:6px;height:15px;background:#495a7a;left:20px;top:31px}
+.avatar{position:absolute;width:120px;text-align:center;transition:all .8s ease;cursor:pointer;z-index:3}
+.avatar:hover{transform:translateY(-5px) scale(1.04)}
+.speech{background:white;color:#222;border-radius:12px;padding:7px 9px;font-size:11px;min-height:36px;box-shadow:0 5px 12px #0004;margin-bottom:5px;position:relative}
+.speech::after{content:"";position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);border:6px solid transparent;border-top-color:white;border-bottom:0}
+.person{width:70px;height:70px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:40px;margin:auto;border:4px solid #fff;box-shadow:0 6px 15px #0005}
+.avatar .name{font-size:12px;font-weight:700;margin-top:4px}.role{font-size:10px;color:#333}.pill{display:inline-block;margin-top:4px;padding:3px 8px;border-radius:999px;font-size:10px;background:#0004;color:#fff}
+.side{display:grid;gap:14px}.side .card{padding:15px}.side h3{font-size:12px;color:var(--blue);margin:0 0 10px}
+.summary-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}.summary-row:last-child{border-bottom:0}
+.announce-list{max-height:170px;overflow:auto}.announce{font-size:12px;padding:7px 0;border-bottom:1px solid var(--line)}.announce b{color:var(--blue)}
+.form-row{display:flex;gap:7px;margin-top:10px}.form-row input{flex:1;background:var(--panel2);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px}.form-row button,.primary{border:0;background:var(--blue);color:#fff;padding:9px 12px;border-radius:8px;cursor:pointer}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}.stat{padding:18px}.stat b{display:block;font-size:26px;margin-top:5px}
+.members{padding:10px}.member-row{display:grid;grid-template-columns:45px 160px 1fr 110px;gap:12px;align-items:center;padding:10px;border-radius:10px}.member-row:hover{background:#ffffff0a}
+.member-emoji{width:40px;height:40px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:24px}
+.editor{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted)}.field input,.field select,.field textarea{background:var(--panel2);border:1px solid var(--line);color:#fff;padding:10px;border-radius:9px}.editor-wrap{padding:18px}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:20}.modal.open{display:flex}.modal-card{width:min(430px,92vw);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}.modal-head{display:flex;justify-content:space-between;align-items:center}.close{background:none;border:0;color:#fff;font-size:22px;cursor:pointer}
+.task-list{display:grid;gap:8px}.task{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12px}
+@media(max-width:950px){.app{grid-template-columns:1fr}.sidebar{flex-direction:row;overflow:auto}.brand,.mini{display:none}.nav{display:flex}.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.member-row{grid-template-columns:45px 1fr}.member-row>*:nth-child(n+3){grid-column:2}.office{min-height:850px}.d1{left:10px}.d2{right:10px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">QA <span>Virtual Office</span></div>
+  <div class="nav">
+    <button class="active" data-page="office">🏢 Office</button>
+    <button data-page="dashboard">📊 Dashboard</button>
+    <button data-page="members">👥 Members</button>
+    <button data-page="profile">🎨 My Profile</button>
+  </div>
+  <div class="mini">ข้อมูลถูกเก็บในเบราว์เซอร์เครื่องนี้<br>อัปโหลดขึ้น GitHub Pages ได้ทันที</div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+  <b>QA VIRTUAL OFFICE 2.0</b>
+  <span class="online"><i></i>ONLINE <b id="onlineCount">0</b></span>
+</header>
+
+<div class="content">
+<section id="officePage" class="page active">
+<div class="grid">
+  <div class="card office">
+    <div class="window w1"></div><div class="window w2"></div>
+    <div class="plant p1">🪴</div><div class="plant p2">🌿</div>
+    <div class="desk d1"><div class="monitor"></div></div>
+    <div class="desk d2"><div class="monitor"></div></div>
+    <div class="desk d3"><div class="monitor"></div></div>
+    <div id="avatars"></div>
+  </div>
+  <div class="side">
+    <div class="card"><h3>TODAY'S SUMMARY</h3><div id="summary"></div></div>
+    <div class="card"><h3>📣 ANNOUNCEMENT</h3><div id="announcements" class="announce-list"></div><div class="form-row"><input id="announceInput" placeholder="พิมพ์ประกาศถึงทีม"><button id="announceBtn">ส่ง</button></div></div>
+    <div class="card"><h3>⚡ QUICK ACTION</h3><button class="primary" id="moveBtn">🚶 ให้ตัวละครเดิน</button></div>
+  </div>
+</div>
+</section>
+
+<section id="dashboardPage" class="page">
+<div class="stats">
+  <div class="card stat">สมาชิกทั้งหมด<b id="sTotal">0</b></div>
+  <div class="card stat">กำลังทำงาน<b id="sWorking">0</b></div>
+  <div class="card stat">ต้องการความช่วยเหลือ<b id="sHelp">0</b></div>
+  <div class="card stat">งานเสร็จวันนี้<b id="sDone">0</b></div>
+</div>
+<div class="card editor-wrap">
+  <h3 style="margin-top:0">📋 QA Task Overview</h3>
+  <div id="taskOverview" class="task-list"></div>
+</div>
+</section>
+
+<section id="membersPage" class="page">
+<div class="card members" id="membersList"></div>
+</section>
+
+<section id="profilePage" class="page">
+<div class="card editor-wrap">
+  <h2 style="margin-top:0">My Profile</h2>
+  <div class="editor">
+    <div class="field"><label>ชื่อ</label><input id="nameInput"></div>
+    <div class="field"><label>ตำแหน่ง</label><input id="roleInput"></div>
+    <div class="field"><label>อีโมจิ</label><input id="emojiInput" maxlength="4"></div>
+    <div class="field"><label>สถานะ</label>
+      <select id="statusInput">
+        <option value="working">กำลังทำงาน</option>
+        <option value="help">ต้องการความช่วยเหลือ</option>
+        <option value="meeting">ประชุม</option>
+        <option value="break">พักเบรก</option>
+        <option value="away">ไม่อยู่</option>
+      </select>
+    </div>
+    <div class="field full"><label>ข้อความบนหัว</label><input id="speechInput"></div>
+    <div class="field full"><label>งานที่รับผิดชอบ</label><textarea id="taskInput" rows="3"></textarea></div>
+    <div class="field"><label>จำนวน Test Case</label><input id="testcaseInput" type="number" min="0"></div>
+    <div class="field"><label>Bug ที่พบ</label><input id="bugInput" type="number" min="0"></div>
+    <div class="field"><label>งานเสร็จวันนี้</label><input id="doneInput" type="number" min="0"></div>
+    <div class="field full"><button class="primary" id="saveProfileBtn">💾 บันทึกโปรไฟล์</button></div>
+  </div>
+</div>
+</section>
+</div>
+</main>
+</div>
+
+<div class="modal" id="memberModal">
+  <div class="modal-card">
+    <div class="modal-head"><h3 id="modalName"></h3><button class="close" id="modalClose">×</button></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const defaults=[
+{id:1,name:"ลาร์ลิน",role:"Senior System Analyst",emoji:"👩🏻‍💻",status:"working",speech:"กำลังตรวจ Data Validation",task:"Validate source vs target และสรุป Diff",testcase:18,bugs:2,done:6},
+{id:2,name:"น้อยหน่า",role:"QA Engineer",emoji:"👩🏻‍🔬",status:"help",speech:"ขอความช่วยเหลือเรื่อง Mapping",task:"Review transformation rules",testcase:12,bugs:1,done:3},
+{id:3,name:"พี่ตั้ม",role:"QA Lead",emoji:"🧑🏻‍💼",status:"meeting",speech:"ประชุมติดตาม UAT",task:"สรุป UAT และ Sign-off",testcase:8,bugs:0,done:4},
+{id:4,name:"น้องฝึกงาน",role:"Data Engineer Intern",emoji:"🧑🏻‍💻",status:"working",speech:"กำลังเขียน Test Case",task:"Generate test cases from design mapping",testcase:25,bugs:3,done:9}
+];
+const statusMap={
+working:{label:"กำลังทำงาน",color:"#37c978"},
+help:{label:"ต้องการความช่วยเหลือ",color:"#ffd166"},
+meeting:{label:"ประชุม",color:"#ff6b6b"},
+break:{label:"พักเบรก",color:"#56ccf2"},
+away:{label:"ไม่อยู่",color:"#a777e3"}
+};
+const positions=[[95,165],[510,165],[305,385],[305,100],[90,430],[520,430]];
+let members=JSON.parse(localStorage.getItem("qaVirtualMembersV2")||"null")||structuredClone(defaults);
+let announcements=JSON.parse(localStorage.getItem("qaVirtualAnnouncementsV2")||"[]");
+
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function save(){localStorage.setItem("qaVirtualMembersV2",JSON.stringify(members));localStorage.setItem("qaVirtualAnnouncementsV2",JSON.stringify(announcements))}
+function switchPage(p){
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+ document.getElementById(p+"Page").classList.add("active");
+ document.querySelector(`.nav button[data-page="${p}"]`).classList.add("active");
+}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>switchPage(b.dataset.page));
+
+function render(){
+ onlineCount.textContent=members.length;
+ avatars.innerHTML=members.map((m,i)=>{
+  const p=positions[i%positions.length],st=statusMap[m.status]||statusMap.working;
+  return `<div class="avatar" data-id="${m.id}" style="left:${p[0]}px;top:${p[1]}px">
+    <div class="speech">${esc(m.speech)}</div><div class="person">${m.emoji}</div>
+    <div class="name">${esc(m.name)}</div><div class="role">${esc(m.role)}</div>
+    <span class="pill" style="background:${st.color}">${st.label}</span></div>`
+ }).join("");
+ document.querySelectorAll(".avatar").forEach(a=>a.onclick=()=>openMember(Number(a.dataset.id)));
+
+ summary.innerHTML=[
+  ["ออนไลน์",members.length],
+  ["กำลังทำงาน",members.filter(x=>x.status==="working").length],
+  ["ต้องการความช่วยเหลือ",members.filter(x=>x.status==="help").length],
+  ["ประชุม",members.filter(x=>x.status==="meeting").length]
+ ].map(x=>`<div class="summary-row"><span>${x[0]}</span><b>${x[1]} คน</b></div>`).join("");
+
+ announcementsEl();
+ membersList.innerHTML=members.map(m=>{
+  const st=statusMap[m.status]||statusMap.working;
+  return `<div class="member-row"><div class="member-emoji">${m.emoji}</div>
+  <div><b>${esc(m.name)}</b><div class="role">${esc(m.role)}</div></div>
+  <div>${esc(m.task)}</div><span class="pill" style="background:${st.color}">${st.label}</span></div>`
+ }).join("");
+
+ sTotal.textContent=members.length;sWorking.textContent=members.filter(x=>x.status==="working").length;sHelp.textContent=members.filter(x=>x.status==="help").length;sDone.textContent=members.reduce((a,b)=>a+(+b.done||0),0);
+ taskOverview.innerHTML=members.map(m=>`<div class="task"><b>${esc(m.name)}</b> — ${esc(m.task)}<br><span style="color:var(--muted)">Test Case ${m.testcase} | Bug ${m.bugs} | Done ${m.done}</span></div>`).join("");
+
+ const me=members[0];nameInput.value=me.name;roleInput.value=me.role;emojiInput.value=me.emoji;statusInput.value=me.status;speechInput.value=me.speech;taskInput.value=me.task;testcaseInput.value=me.testcase;bugInput.value=me.bugs;doneInput.value=me.done;
+}
+function announcementsEl(){
+ announcements.innerHTML=announcements.length?announcements.map(a=>`<div class="announce"><b>${esc(a.author)}</b><br>${esc(a.text)}</div>`).join(""):`<div style="color:var(--muted);font-size:12px">ยังไม่มีประกาศ</div>`;
+}
+announceBtn.onclick=()=>{const t=announceInput.value.trim();if(!t)return;announcements.unshift({author:members[0]?.name||"QA Team",text:t});announcements=announcements.slice(0,10);announceInput.value="";save();render()};
+saveProfileBtn.onclick=()=>{
+ const m=members[0];m.name=nameInput.value.trim()||m.name;m.role=roleInput.value.trim()||m.role;m.emoji=emojiInput.value.trim()||m.emoji;m.status=statusInput.value;m.speech=speechInput.value.trim()||"กำลังทำงาน";m.task=taskInput.value.trim()||"ยังไม่ระบุงาน";m.testcase=+testcaseInput.value||0;m.bugs=+bugInput.value||0;m.done=+doneInput.value||0;save();render();switchPage("office");
+};
+function openMember(id){
+ const m=members.find(x=>x.id===id),st=statusMap[m.status]||statusMap.working;
+ modalName.textContent=m.name;
+ modalBody.innerHTML=`<p style="color:var(--muted)">${esc(m.role)}</p><p><b>สถานะ:</b> <span style="color:${st.color}">${st.label}</span></p><p><b>กำลังทำ:</b> ${esc(m.task)}</p><p><b>Test Case:</b> ${m.testcase} &nbsp; <b>Bug:</b> ${m.bugs} &nbsp; <b>Done:</b> ${m.done}</p>`;
+ memberModal.classList.add("open");
+}
+modalClose.onclick=()=>memberModal.classList.remove("open");
+memberModal.onclick=e=>{if(e.target===memberModal)memberModal.classList.remove("open")};
+moveBtn.onclick=()=>{
+ document.querySelectorAll(".avatar").forEach((a,i)=>{
+  const p=positions[(i+1)%positions.length];a.style.left=p[0]+"px";a.style.top=p[1]+"px";
+ });
+};
+render();
+</script>
+</body>
+</html>
